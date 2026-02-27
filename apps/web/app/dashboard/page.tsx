@@ -48,6 +48,9 @@ export default async function DashboardPage({
           <Link className="rounded-xl border border-slate-300 px-4 py-2.5 text-slate-700" href="/quotes">
             Quote List
           </Link>
+          <Link className="rounded-xl border border-slate-300 px-4 py-2.5 text-slate-700" href="/followups">
+            Follow-ups
+          </Link>
           <Link className="rounded-xl bg-indigo-600 px-4 py-2.5 text-white" href="/lead/new">
             + 新增 Lead
           </Link>
