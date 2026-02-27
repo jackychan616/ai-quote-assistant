@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
 import { getSupabaseAdmin } from '../../../../../lib/supabaseAdmin';
 
-// MVP send stub:
-// - marks follow-up as done
-// - returns the outbound payload preview
-// Later: plug into Resend / WhatsApp provider
 export async function POST(_: Request, { params }: { params: { id: string } }) {
   const { client: supabaseAdmin, error: envError } = getSupabaseAdmin();
   if (!supabaseAdmin) return NextResponse.json({ error: envError }, { status: 500 });
@@ -20,18 +17,38 @@ export async function POST(_: Request, { params }: { params: { id: string } }) {
   }
 
   const lead = Array.isArray(row.leads) ? row.leads[0] : row.leads;
-  const outbound = {
-    channel: row.channel,
-    to: lead?.email ?? 'unknown',
-    text:
-      row.message_draft?.trim() ||
-      `Hi ${lead?.full_name || ''}，想跟進返你之前報價，如果你方便我可以幫你落實下一步。`,
-  };
+  const toEmail = lead?.email ?? '';
+  const text =
+    row.message_draft?.trim() ||
+    `Hi ${lead?.full_name || ''}，想跟進返你之前報價，如果你方便我可以幫你落實下一步。`;
+
+  let mode: 'stub' | 'resend' = 'stub';
+
+  // If channel=email and env is configured, send real email via Resend.
+  if (row.channel === 'email' && process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL && toEmail) {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const { error: sendError } = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL,
+      to: [toEmail],
+      subject: 'Follow-up on your quote',
+      text,
+    });
+
+    if (sendError) {
+      return NextResponse.json({ error: 'Failed to send email', detail: sendError.message }, { status: 500 });
+    }
+
+    mode = 'resend';
+  }
 
   await supabaseAdmin
     .from('followups')
     .update({ status: 'done', completed_at: new Date().toISOString() })
     .eq('id', params.id);
 
-  return NextResponse.json({ ok: true, sent: outbound, mode: 'stub' });
+  return NextResponse.json({
+    ok: true,
+    sent: { channel: row.channel, to: toEmail || 'unknown', text },
+    mode,
+  });
 }

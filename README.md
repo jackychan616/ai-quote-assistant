@@ -55,6 +55,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 - `docs/DEPLOYMENT.md`
 - `docs/DEMO_SCRIPT.md`
+- `docs/ONE_PAGER.md`
 - `docs/API_CONTRACTS.md`
 - `docs/IMPLEMENTATION_PLAN.md`
 

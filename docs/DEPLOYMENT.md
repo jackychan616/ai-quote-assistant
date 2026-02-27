@@ -17,6 +17,8 @@
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `NEXT_PUBLIC_APP_URL`（例如 production URL）
+- `RESEND_API_KEY`（如要 email 真發送）
+- `RESEND_FROM_EMAIL`（例如 `Sales Bot <noreply@yourdomain.com>`）
 
 ## 4) Post-deploy checks
 - `/api/health` 回 200
