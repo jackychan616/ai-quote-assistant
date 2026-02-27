@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900;
+}
+
+.card {
+  @apply rounded-2xl border border-slate-200 bg-white shadow-soft;
+}
+
+.btn-primary {
+  @apply rounded-xl bg-brand-600 px-4 py-2.5 text-white transition hover:bg-brand-700;
+}
+
+.btn-secondary {
+  @apply rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-700 transition hover:bg-slate-100;
+}
