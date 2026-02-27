@@ -14,6 +14,12 @@ type Followup = {
   leads?: { full_name?: string; email?: string };
 };
 
+const templates = [
+  'Hi！想跟進返你之前報價，如果你方便我可以幫你落實下一步。',
+  '想確認你對上次報價有冇問題？我可以按你預算再微調方案。',
+  'Friendly reminder：本週有時段可安排啟動，如果你ok我可以即刻預留。',
+];
+
 export default function FollowupsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [followups, setFollowups] = useState<Followup[]>([]);
@@ -121,6 +127,14 @@ export default function FollowupsPage() {
           placeholder="跟進訊息草稿"
           className="mt-3 w-full rounded-xl border border-slate-300 px-3 py-2"
         />
+
+        <div className="mt-2 flex flex-wrap gap-2">
+          {templates.map((t) => (
+            <button key={t} type="button" onClick={() => setMessageDraft(t)} className="btn-secondary !px-2.5 !py-1.5 !text-xs">
+              套用模板
+            </button>
+          ))}
+        </div>
 
         <button onClick={createFollowup} className="btn-primary mt-3">建立提醒</button>
         {msg ? <p className="mt-2 text-sm text-slate-700">{msg}</p> : null}

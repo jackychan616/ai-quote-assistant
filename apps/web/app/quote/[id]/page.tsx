@@ -141,6 +141,9 @@ export default function QuoteDraftPage({ params }: { params: { id: string } }) {
           <Link href={`/lead/${params.id}`} className="rounded-xl border border-slate-300 px-4 py-2.5 text-slate-700">
             返回 Lead
           </Link>
+          <Link href={`/quote/${params.id}/print`} className="rounded-xl border border-slate-300 px-4 py-2.5 text-slate-700">
+            Print / PDF
+          </Link>
           <Link href="/quotes" className="rounded-xl border border-slate-300 px-4 py-2.5 text-slate-700">
             看 Quote List
           </Link>

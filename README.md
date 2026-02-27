@@ -45,11 +45,12 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 - `/quotes`
 - `/followups`
 
-## Auto follow-up endpoint
+## Automation endpoints
 
 - `POST /api/followups/auto`
-
-用途：為 `quoted` 狀態而且未有 pending follow-up 的 leads，自動建立 D+1 跟進。
+  - 為 `quoted` 狀態而且未有 pending follow-up 的 leads，自動建立 D+1 跟進。
+- `POST /api/demo/seed`
+  - 一鍵建立 demo leads / quote / follow-up 測試資料。
 
 ## More docs
 
