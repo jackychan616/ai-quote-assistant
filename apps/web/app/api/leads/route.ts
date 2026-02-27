@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
   const page = Number(searchParams.get('page') ?? '1');
   const pageSize = Math.min(Number(searchParams.get('pageSize') ?? '20'), 100);
   const status = searchParams.get('status');
+  const q = searchParams.get('q')?.trim();
 
   const from = (Math.max(page, 1) - 1) * Math.max(pageSize, 1);
   const to = from + Math.max(pageSize, 1) - 1;
@@ -34,6 +35,10 @@ export async function GET(request: NextRequest) {
 
   if (status && ['new', 'qualified', 'quoted', 'won', 'lost'].includes(status)) {
     query = query.eq('status', status);
+  }
+
+  if (q) {
+    query = query.or(`full_name.ilike.%${q}%,email.ilike.%${q}%,company.ilike.%${q}%`);
   }
 
   const { data, error, count } = await query;
