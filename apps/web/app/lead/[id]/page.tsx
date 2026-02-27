@@ -14,16 +14,29 @@ type Lead = {
   status: 'new' | 'qualified' | 'quoted' | 'won' | 'lost';
 };
 
+type Activity = {
+  quotes: Array<{ id: string; status: string; total_amount: number; currency: string; created_at: string }>;
+  followups: Array<{ id: string; status: string; channel: string; due_at: string; created_at: string; completed_at?: string | null }>;
+};
+
 export default function LeadDetailPage({ params }: { params: { id: string } }) {
   const [lead, setLead] = useState<Lead | null>(null);
+  const [activity, setActivity] = useState<Activity>({ quotes: [], followups: [] });
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/leads/${params.id}`)
-      .then((r) => r.json())
-      .then((body) => setLead(body.data ?? null))
-      .catch(() => setLead(null));
+    Promise.all([fetch(`/api/leads/${params.id}`), fetch(`/api/leads/${params.id}/activity`)])
+      .then(async ([leadRes, activityRes]) => {
+        const leadBody = await leadRes.json().catch(() => ({}));
+        const activityBody = await activityRes.json().catch(() => ({}));
+        setLead(leadBody.data ?? null);
+        setActivity(activityBody.data ?? { quotes: [], followups: [] });
+      })
+      .catch(() => {
+        setLead(null);
+        setActivity({ quotes: [], followups: [] });
+      });
   }, [params.id]);
 
   async function save() {
@@ -136,6 +149,44 @@ export default function LeadDetailPage({ params }: { params: { id: string } }) {
           </Link>
         </div>
       </div>
+
+      <section className="card mt-5 p-5">
+        <h2 className="text-lg font-medium text-slate-900">Activity Timeline</h2>
+
+        <div className="mt-3 grid gap-4 md:grid-cols-2">
+          <div>
+            <h3 className="text-sm font-medium text-slate-700">Quotes</h3>
+            {activity.quotes.length === 0 ? (
+              <p className="mt-2 text-sm text-slate-500">未有 quote 記錄。</p>
+            ) : (
+              <ul className="mt-2 space-y-2">
+                {activity.quotes.map((q) => (
+                  <li key={q.id} className="rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                    <p className="font-medium text-slate-800">{q.currency} {Number(q.total_amount).toFixed(2)} · {q.status}</p>
+                    <p className="text-slate-500">{new Date(q.created_at).toLocaleString()}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-slate-700">Follow-ups</h3>
+            {activity.followups.length === 0 ? (
+              <p className="mt-2 text-sm text-slate-500">未有 follow-up 記錄。</p>
+            ) : (
+              <ul className="mt-2 space-y-2">
+                {activity.followups.map((f) => (
+                  <li key={f.id} className="rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                    <p className="font-medium text-slate-800">{f.channel} · {f.status}</p>
+                    <p className="text-slate-500">Due: {new Date(f.due_at).toLocaleString()}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </section>
 
       {msg ? <p className="mt-3 text-sm text-slate-700">{msg}</p> : null}
     </main>

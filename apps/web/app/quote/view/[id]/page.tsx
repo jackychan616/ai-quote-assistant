@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import AcceptButton from './accept-button';
 
 type QuoteItem = { id: string; item_name: string; quantity: number; unit_price: number; line_total: number };
 type QuotePayload = {
@@ -68,7 +69,8 @@ export default async function QuoteViewPage({ params }: { params: { id: string }
 
         {quote.ai_summary ? <p className="mt-5 text-sm text-slate-700">{quote.ai_summary}</p> : null}
 
-        <div className="mt-6">
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <AcceptButton quoteId={quote.id} />
           <Link href="/" className="btn-secondary">Back</Link>
         </div>
       </div>
