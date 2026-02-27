@@ -101,10 +101,21 @@ export default async function DashboardPage({
         <Kpi title="Pending Follow-ups" value={pendingFollowups} />
       </section>
 
-      <section className="mt-4 card p-4">
-        <h2 className="text-sm text-slate-600">Conversion Snapshot</h2>
-        <p className="mt-1 text-2xl font-semibold text-slate-900">{conversion}%</p>
-        <p className="text-sm text-slate-600">Won / Quoted（簡易版）</p>
+      <section className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="card p-4">
+          <h2 className="text-sm text-slate-600">Conversion Snapshot</h2>
+          <p className="mt-1 text-2xl font-semibold text-slate-900">{conversion}%</p>
+          <p className="text-sm text-slate-600">Won / Quoted（簡易版）</p>
+        </div>
+
+        <div className="card p-4">
+          <h2 className="text-sm text-slate-600">Pipeline Bar</h2>
+          <div className="mt-3 space-y-2 text-sm">
+            <Bar label="New" value={counts.new} max={Math.max(counts.total, 1)} color="bg-sky-500" />
+            <Bar label="Quoted" value={counts.quoted} max={Math.max(counts.total, 1)} color="bg-violet-500" />
+            <Bar label="Won" value={counts.won} max={Math.max(counts.total, 1)} color="bg-emerald-500" />
+          </div>
+        </div>
       </section>
 
       <section className="mt-8 card p-4">
@@ -142,6 +153,21 @@ function Kpi({ title, value }: { title: string; value: number }) {
     <div className="card p-4">
       <p className="text-sm text-slate-600">{title}</p>
       <p className="mt-1 text-2xl font-semibold text-slate-900">{value}</p>
+    </div>
+  );
+}
+
+function Bar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+  const width = Math.max(6, Math.round((value / max) * 100));
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between">
+        <span className="text-slate-700">{label}</span>
+        <span className="text-slate-500">{value}</span>
+      </div>
+      <div className="h-2 rounded-full bg-slate-100">
+        <div className={`h-2 rounded-full ${color}`} style={{ width: `${width}%` }} />
+      </div>
     </div>
   );
 }
