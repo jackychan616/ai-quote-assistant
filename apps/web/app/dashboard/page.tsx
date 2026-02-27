@@ -176,8 +176,6 @@ export default async function DashboardPage({
           )}
         </div>
       </section>
-        </div>
-      </section>
 
       <section className="mt-8 card p-4">
         <h2 className="text-lg font-medium text-slate-900">Lead List</h2>
@@ -221,17 +219,3 @@ function Kpi({ title, value }: { title: string; value: number }) {
   );
 }
 
-function Bar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
-  const width = Math.max(6, Math.round((value / max) * 100));
-  return (
-    <div>
-      <div className="mb-1 flex items-center justify-between">
-        <span className="text-slate-700">{label}</span>
-        <span className="text-slate-500">{value}</span>
-      </div>
-      <div className="h-2 rounded-full bg-slate-100">
-        <div className={`h-2 rounded-full ${color}`} style={{ width: `${width}%` }} />
-      </div>
-    </div>
-  );
-}
