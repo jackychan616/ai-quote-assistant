@@ -34,7 +34,9 @@ export default function FollowupsPage() {
     const followupsBody = await followupsRes.json().catch(() => ({}));
 
     setLeads(leadsBody.data ?? []);
-    setFollowups(followupsBody.data ?? []);
+    const rows: Followup[] = followupsBody.data ?? [];
+    rows.sort((a, b) => +new Date(a.due_at) - +new Date(b.due_at));
+    setFollowups(rows);
     if (!leadId && (leadsBody.data ?? []).length > 0) setLeadId(leadsBody.data[0].id);
   }
 
@@ -71,14 +73,25 @@ export default function FollowupsPage() {
     await load();
   }
 
+  async function sendNow(id: string) {
+    const res = await fetch(`/api/followups/${id}/send`, { method: 'POST' });
+    const body = await res.json().catch(() => ({}));
+    if (res.ok) {
+      setMsg(`已模擬發送：${body?.sent?.channel ?? ''} -> ${body?.sent?.to ?? ''}`);
+    } else {
+      setMsg(`發送失敗：${body?.error ?? 'unknown error'}`);
+    }
+    await load();
+  }
+
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-slate-900">Follow-ups</h1>
-        <Link href="/dashboard" className="rounded-xl border border-slate-300 px-4 py-2 text-slate-700">返回 Dashboard</Link>
+        <Link href="/dashboard" className="btn-secondary">返回 Dashboard</Link>
       </div>
 
-      <section className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="card mt-5 p-4">
         <h2 className="text-lg font-medium text-slate-900">新增 Follow-up</h2>
         <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
           <select value={leadId} onChange={(e) => setLeadId(e.target.value)} className="rounded-xl border border-slate-300 px-3 py-2">
@@ -109,26 +122,40 @@ export default function FollowupsPage() {
           className="mt-3 w-full rounded-xl border border-slate-300 px-3 py-2"
         />
 
-        <button onClick={createFollowup} className="mt-3 rounded-xl bg-indigo-600 px-4 py-2.5 text-white">建立提醒</button>
+        <button onClick={createFollowup} className="btn-primary mt-3">建立提醒</button>
         {msg ? <p className="mt-2 text-sm text-slate-700">{msg}</p> : null}
       </section>
 
-      <section className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="card mt-5 p-4">
         <h2 className="text-lg font-medium text-slate-900">Pending Follow-ups</h2>
         {followups.length === 0 ? (
           <p className="mt-2 text-sm text-slate-600">暫時冇待跟進項目。</p>
         ) : (
           <ul className="mt-3 space-y-2">
-            {followups.map((f) => (
-              <li key={f.id} className="flex items-center justify-between rounded-xl border border-slate-200 px-3 py-2">
-                <div>
-                  <p className="font-medium text-slate-900">{f.leads?.full_name || 'Unknown lead'}</p>
-                  <p className="text-sm text-slate-600">{new Date(f.due_at).toLocaleString()} · {f.channel} · {f.priority}</p>
-                  {f.message_draft ? <p className="text-sm text-slate-600">{f.message_draft}</p> : null}
-                </div>
-                <button onClick={() => markDone(f.id)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-700">Mark done</button>
-              </li>
-            ))}
+            {followups.map((f) => {
+              const overdue = new Date(f.due_at).getTime() < Date.now();
+              return (
+                <li
+                  key={f.id}
+                  className={`flex items-center justify-between rounded-xl border px-3 py-2 ${
+                    overdue ? 'border-rose-200 bg-rose-50' : 'border-slate-200'
+                  }`}
+                >
+                  <div>
+                    <p className="font-medium text-slate-900">{f.leads?.full_name || 'Unknown lead'}</p>
+                    <p className="text-sm text-slate-600">
+                      {new Date(f.due_at).toLocaleString()} · {f.channel} · {f.priority}
+                      {overdue ? ' · OVERDUE' : ''}
+                    </p>
+                    {f.message_draft ? <p className="text-sm text-slate-600">{f.message_draft}</p> : null}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => sendNow(f.id)} className="btn-primary !px-3 !py-1.5 !text-sm">Send now</button>
+                    <button onClick={() => markDone(f.id)} className="btn-secondary !px-3 !py-1.5 !text-sm">Mark done</button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
