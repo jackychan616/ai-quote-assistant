@@ -10,7 +10,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/dashboard" className="text-sm font-semibold tracking-tight text-slate-900">
               AI Quote Assistant
             </Link>
-            <nav className="flex items-center gap-2 text-sm">
+            <nav className="flex flex-wrap items-center justify-end gap-2 text-sm">
               <Link className="btn-secondary !px-3 !py-1.5" href="/dashboard">Dashboard</Link>
               <Link className="btn-secondary !px-3 !py-1.5" href="/onboarding">Onboarding</Link>
               <Link className="btn-secondary !px-3 !py-1.5" href="/quotes">Quotes</Link>

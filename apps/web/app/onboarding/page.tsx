@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function OnboardingPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [businessName, setBusinessName] = useState('');
   const [niche, setNiche] = useState('');
@@ -27,7 +29,8 @@ export default function OnboardingPage() {
       return;
     }
 
-    setMsg('完成 onboarding ✅ 已建立第一個 lead。');
+    setMsg('完成 onboarding ✅ 已建立第一個 lead，正在跳轉 dashboard...');
+    setTimeout(() => router.push('/dashboard'), 800);
   }
 
   return (

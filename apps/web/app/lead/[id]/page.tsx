@@ -137,7 +137,7 @@ export default function LeadDetailPage({ params }: { params: { id: string } }) {
           />
         </Field>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button onClick={save} disabled={loading} className="rounded-xl bg-indigo-600 px-4 py-2.5 text-white disabled:opacity-60">
             {loading ? '儲存中...' : '儲存修改'}
           </button>
