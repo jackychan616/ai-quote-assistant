@@ -44,9 +44,14 @@ export default async function DashboardPage({
           <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
           <p className="mt-1 text-slate-600">今日重點：先處理新 lead，再推進已報價客戶。</p>
         </div>
-        <Link className="rounded-xl bg-indigo-600 px-4 py-2.5 text-white" href="/lead/new">
-          + 新增 Lead
-        </Link>
+        <div className="flex gap-2">
+          <Link className="rounded-xl border border-slate-300 px-4 py-2.5 text-slate-700" href="/quotes">
+            Quote List
+          </Link>
+          <Link className="rounded-xl bg-indigo-600 px-4 py-2.5 text-white" href="/lead/new">
+            + 新增 Lead
+          </Link>
+        </div>
       </div>
 
       <form className="mt-5 grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-4">
