@@ -7,17 +7,19 @@
 }
 
 body {
-  @apply bg-slate-50 text-slate-900;
+  @apply bg-[#f8fafc] text-slate-900 antialiased;
+  background-image: radial-gradient(circle at 20% -20%, rgba(99, 102, 241, 0.08), transparent 35%),
+    radial-gradient(circle at 80% -10%, rgba(59, 130, 246, 0.06), transparent 30%);
 }
 
 .card {
-  @apply rounded-2xl border border-slate-200 bg-white shadow-soft;
+  @apply rounded-2xl border border-slate-200/90 bg-white/90 shadow-soft backdrop-blur;
 }
 
 .btn-primary {
-  @apply rounded-xl bg-brand-600 px-4 py-2.5 text-white transition hover:bg-brand-700;
+  @apply rounded-xl bg-gradient-to-b from-indigo-500 to-indigo-600 px-4 py-2.5 text-white shadow-sm transition hover:from-indigo-600 hover:to-indigo-700;
 }
 
 .btn-secondary {
-  @apply rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-700 transition hover:bg-slate-100;
+  @apply rounded-xl border border-slate-300 bg-white/90 px-4 py-2.5 text-slate-700 transition hover:bg-slate-100;
 }
