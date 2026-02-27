@@ -1,18 +1,18 @@
 # AI Quote + Follow-up Assistant
 
-Starter scaffold for a Next.js + Supabase app that helps sales teams:
-- capture leads
-- generate/manage quotes
-- track follow-up tasks
-- monitor conversion pipeline
+由查詢到成交，一站式管理：
+- Leads 管理（新增 / 搜尋 / 編輯）
+- Quote Draft（支援 line items）
+- Follow-ups（手動 + 自動建立）
+- Dashboard KPI（pipeline + pending 跟進）
 
 ## Structure
 
 - `apps/web` - Next.js 14 App Router frontend + API routes
-- `docs` - implementation plan and API contracts
+- `docs` - implementation, API, deployment, demo script
 - `supabase/migrations` - SQL migrations
 
-## Quick start (when ready)
+## Quick start
 
 ```bash
 cd apps/web
@@ -20,4 +20,41 @@ npm install
 npm run dev
 ```
 
-Then run Supabase migration in your project SQL editor or via CLI.
+開發網址：`http://localhost:3000`
+
+## Required env (`apps/web/.env.local`)
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+## Database setup
+
+在 Supabase SQL Editor 執行：
+- `supabase/migrations/20260227210000_init_ai_quote_assistant.sql`
+
+## Main pages
+
+- `/dashboard`
+- `/lead/new`
+- `/lead/:id`
+- `/quote/:id`
+- `/quotes`
+- `/followups`
+
+## Auto follow-up endpoint
+
+- `POST /api/followups/auto`
+
+用途：為 `quoted` 狀態而且未有 pending follow-up 的 leads，自動建立 D+1 跟進。
+
+## More docs
+
+- `docs/DEPLOYMENT.md`
+- `docs/DEMO_SCRIPT.md`
+- `docs/API_CONTRACTS.md`
+- `docs/IMPLEMENTATION_PLAN.md`
+
