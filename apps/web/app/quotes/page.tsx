@@ -39,9 +39,12 @@ export default async function QuotesPage() {
                   <p className="font-medium text-slate-900">{q.leads?.full_name || q.lead_id.slice(0, 8)}</p>
                   <p className="text-sm text-slate-600">{q.leads?.email || 'no email'} · {new Date(q.created_at).toLocaleString()}</p>
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold text-slate-900">{q.currency} {Number(q.total_amount).toFixed(2)}</p>
-                  <p className="text-xs text-slate-600">{q.status}</p>
+                <div className="flex items-center gap-2 text-right">
+                  <div>
+                    <p className="font-semibold text-slate-900">{q.currency} {Number(q.total_amount).toFixed(2)}</p>
+                    <p className="text-xs text-slate-600">{q.status}</p>
+                  </div>
+                  <Link href={`/quote/view/${q.id}`} className="btn-secondary !px-2.5 !py-1.5 !text-xs">分享頁</Link>
                 </div>
               </li>
             ))}

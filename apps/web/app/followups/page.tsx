@@ -23,6 +23,7 @@ const templates = [
 export default function FollowupsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [followups, setFollowups] = useState<Followup[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [leadId, setLeadId] = useState('');
   const [dueAt, setDueAt] = useState('');
   const [channel, setChannel] = useState('whatsapp');
@@ -43,6 +44,7 @@ export default function FollowupsPage() {
     const rows: Followup[] = followupsBody.data ?? [];
     rows.sort((a, b) => +new Date(a.due_at) - +new Date(b.due_at));
     setFollowups(rows);
+    setSelectedIds([]);
     if (!leadId && (leadsBody.data ?? []).length > 0) setLeadId(leadsBody.data[0].id);
   }
 
@@ -87,6 +89,22 @@ export default function FollowupsPage() {
     } else {
       setMsg(`發送失敗：${body?.error ?? 'unknown error'}`);
     }
+    await load();
+  }
+
+  function toggleSelect(id: string, checked: boolean) {
+    setSelectedIds((prev) => (checked ? [...prev, id] : prev.filter((x) => x !== id)));
+  }
+
+  async function bulkDone() {
+    if (selectedIds.length === 0) return;
+    const res = await fetch('/api/followups/bulk', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: selectedIds, status: 'done' }),
+    });
+    const body = await res.json().catch(() => ({}));
+    setMsg(res.ok ? `已批次完成 ${body?.count ?? selectedIds.length} 項` : `批次操作失敗：${body?.error ?? 'unknown error'}`);
     await load();
   }
 
@@ -141,7 +159,12 @@ export default function FollowupsPage() {
       </section>
 
       <section className="card mt-5 p-4">
-        <h2 className="text-lg font-medium text-slate-900">Pending Follow-ups</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-medium text-slate-900">Pending Follow-ups</h2>
+          <button onClick={bulkDone} disabled={selectedIds.length === 0} className="btn-secondary !px-3 !py-1.5 !text-sm disabled:opacity-50">
+            批次 Mark done ({selectedIds.length})
+          </button>
+        </div>
         {followups.length === 0 ? (
           <p className="mt-2 text-sm text-slate-600">暫時冇待跟進項目。</p>
         ) : (
@@ -155,13 +178,21 @@ export default function FollowupsPage() {
                     overdue ? 'border-rose-200 bg-rose-50' : 'border-slate-200'
                   }`}
                 >
-                  <div>
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      className="mt-1 h-4 w-4"
+                      checked={selectedIds.includes(f.id)}
+                      onChange={(e) => toggleSelect(f.id, e.target.checked)}
+                    />
+                    <div>
                     <p className="font-medium text-slate-900">{f.leads?.full_name || 'Unknown lead'}</p>
                     <p className="text-sm text-slate-600">
                       {new Date(f.due_at).toLocaleString()} · {f.channel} · {f.priority}
                       {overdue ? ' · OVERDUE' : ''}
                     </p>
                     {f.message_draft ? <p className="text-sm text-slate-600">{f.message_draft}</p> : null}
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => sendNow(f.id)} className="btn-primary !px-3 !py-1.5 !text-sm">Send now</button>
